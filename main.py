@@ -1,7 +1,7 @@
 import sys  #For accepting command line arguments
 import random
 
-
+""" 
 #Reading Command line arguments
 numberOfArgs = len(sys.argv)
 nameOfScript = sys.argv[0]
@@ -15,7 +15,7 @@ for i in range(1, numberOfArgs):
     arguments.append(sys.argv[i])
     print(sys.argv[i])
 
-
+ """
 #Set X
 n = random.randint(1000, 3000)
 print("\nn:", n)
@@ -50,6 +50,8 @@ class Node(object):
         self.right = None
 
 #https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
+#https://www.geeksforgeeks.org/avl-tree-set-2-deletion/
+#
 # AVL tree class which supports the 
 # Insert operation
 class AVL_Tree(object):
@@ -292,18 +294,15 @@ root = None
 """
 Insert
 """
-
 for elem in X:
     root =  myTree.insert(root, elem)
 
-# In Order Traversal
-print("In order traversal of the constructed AVL tree is")
-#myTree.inOrder(root)
-print()
-#printTree(root, 0)
-print("After insert")
+print("\nInsert")
 print("AVL %d total rotations required, height is " %myTree.getRotations(), myTree.getHeight(root))
 
+#print("In order traversal of the constructed AVL tree is:\n")
+#myTree.inOrder(root)
+#printTree(root, 0)
 
 """ 
 Delete 
@@ -311,17 +310,19 @@ Delete
 for elem in Y:
     myTree.delete(root, elem)
 
-print("After delete")
+print("\nDelete")
 print("AVL %d total rotations required, height is " %myTree.getRotations(), myTree.getHeight(root))
+
+#print("In order traversal of the constructed AVL tree after deleting items is:\n")
 #myTree.inOrder(root)
-print()
 #printTree(root, 0)
 
 """
 Search
 """
-print("k is ", k)
-
 for elem in Z:
     myTree.search(root, elem)
+
+print("\nSearch")
+print("k is ", k)
 print("AVL: %d total comparisons required" %myTree.getComparisons())
