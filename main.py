@@ -56,6 +56,7 @@ class AVL_Tree(object):
 
     def __init__(self):
         self.rotations = 0
+        self.comparisons = 0
  
     # Recursive function to insert key in subtree rooted with node and returns new root of subtree.
     def insert(self, root, key):
@@ -157,6 +158,22 @@ class AVL_Tree(object):
   
         return root 
 
+    def search(self, root, val):
+        self.comparisons += 1
+        #if no root exists then there is no subtree to search in
+        if (root is None):
+            return False
+        #check if the current root value matches the value we are looking for
+        elif (root.val == val):
+            return True
+        #if value we are searching for is larger than the current root value it must mean that the value is in the right subtree
+        elif(root.val < val):
+            return self.search(root.right,val)
+
+        #otherwise check the left subtree
+        return self.search(root.left,val)
+
+
     def leftRotate(self, z):
 
         self.rotations += 1
@@ -201,6 +218,9 @@ class AVL_Tree(object):
     
     def getRotations(self):
         return self.rotations
+
+    def getComparisons(self):
+        return self.comparisons
  
     #left subtree height – right subtree height
     def getBalance(self, root):
@@ -241,6 +261,7 @@ class AVL_Tree(object):
         self.postOrder(root.left)
         self.postOrder(root.right)
         print("{0} ".format(root.val), end="")
+
 
 #Printing the tree
 def printTree(root, indent):
@@ -296,4 +317,11 @@ print("AVL %d total rotations required, height is " %myTree.getRotations(), myTr
 print()
 #printTree(root, 0)
 
+"""
+Search
+"""
+print("k is ", k)
 
+for elem in Z:
+    myTree.search(root, elem)
+print("AVL: %d total comparisons required" %myTree.getComparisons())
