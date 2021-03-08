@@ -41,19 +41,21 @@ print("Set Z contains %d elements" %len(Z))
 intersection = X.intersection(Y)
 print("\nSets X and Y have %d elements in common" %len(intersection))
 
+"""
+AVL Tree
 
-class Node(object):
+https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
+https://www.geeksforgeeks.org/avl-tree-set-2-deletion/
+"""
+
+class AVLNode(object):
     def __init__(self, val):
         self.val = val
         self.height = 1
         self.left = None
         self.right = None
 
-#https://www.geeksforgeeks.org/avl-tree-set-1-insertion/
-#https://www.geeksforgeeks.org/avl-tree-set-2-deletion/
-#
-# AVL tree class which supports the 
-# Insert operation
+# AVL tree class
 class AVL_Tree(object):
 
     def __init__(self):
@@ -65,7 +67,7 @@ class AVL_Tree(object):
      
         # Step 1 - Perform normal BST
         if not root:
-            return Node(key)
+            return AVLNode(key)
         elif key < root.val:
             root.left = self.insert(root.left, key)
         else:
@@ -75,7 +77,7 @@ class AVL_Tree(object):
         root.height = 1 + max(self.getHeight(root.left), self.getHeight(root.right))
  
         # Step 3 - Get the balance factor
-        #If balance factor is greater than 1, then the current node is unbalanced and rotations must be performed
+        # If balance factor is greater than 1, then the current node is unbalanced and rotations must be performed
         balance = self.getBalance(root)
  
         # Step 4 - If the node is unbalanced, then try out the 4 cases to re-balance
@@ -162,17 +164,17 @@ class AVL_Tree(object):
 
     def search(self, root, val):
         self.comparisons += 1
-        #if no root exists then there is no subtree to search in
+        # If no root exists then there is no subtree to search in
         if (root is None):
             return False
-        #check if the current root value matches the value we are looking for
+        # Check if the current root value matches the value we are looking for
         elif (root.val == val):
             return True
-        #if value we are searching for is larger than the current root value it must mean that the value is in the right subtree
+        # If value we are searching for is larger than the current root value it must mean that the value is in the right subtree
         elif(root.val < val):
             return self.search(root.right,val)
 
-        #otherwise check the left subtree
+        # Otherwise check the left subtree
         return self.search(root.left,val)
 
 
@@ -224,7 +226,7 @@ class AVL_Tree(object):
     def getComparisons(self):
         return self.comparisons
  
-    #left subtree height – right subtree height
+    # Left subtree height – right subtree height
     def getBalance(self, root):
         if not root:
             return 0
@@ -265,7 +267,7 @@ class AVL_Tree(object):
         print("{0} ".format(root.val), end="")
 
 
-#Printing the tree
+# Printing the tree
 def printTree(root, indent):
     
     space = 4
