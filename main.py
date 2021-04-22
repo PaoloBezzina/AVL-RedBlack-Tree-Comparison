@@ -17,6 +17,7 @@ for i in range(1, numberOfArgs):
     print(sys.argv[i])
 
  """
+
 # Set X
 n = random.randint(1000, 3000)
 print("\nn:", n)
@@ -315,6 +316,39 @@ class RBNode(object):
 
 
 class RB_Tree(object):
+    def __init__(self):
+        self.root = None
+        self.size = 0
+
+    def add(self, data, curr=None):
+        """
+        :param data: an int, float, or any other comparable value
+        :param curr:
+        :return: None but midifies tree to have an additional node
+        """
+        self.size += 1
+        new_node = RBNode(data)
+        # Base Case - Nothing in the tree
+        if self.root == None:
+            new_node.red = False
+            self.root = new_node
+            return
+        # Search to find the node's correct place
+        currentNode = self.root
+        while currentNode != NIL:
+            potentialParent = currentNode
+            if new_node.data < currentNode.data:
+                currentNode = currentNode.left
+            else:
+                currentNode = currentNode.right
+        # Assign parents and siblings to the new node
+        new_node.parent = potentialParent
+        if new_node.data < new_node.parent.data:
+            new_node.parent.left = new_node
+        else:
+            new_node.parent.right = new_node
+        self.fix_tree_after_add(new_node)
+
     def search(self, root, val):
         self.comparisons += 1
         # If no root exists then there is no subtree to search in
