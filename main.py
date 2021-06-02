@@ -1,23 +1,5 @@
-import sys  # For accepting command line arguments
 import random
 from enum import Enum
-
-"""
-# Reading Command line arguments
-numberOfArgs = len(sys.argv)
-nameOfScript = sys.argv[0]
-
-print("Number of arguments passed:", numberOfArgs)
-print("\nName of script:", nameOfScript)
-print("\nArguments passed:")
-
-arguments = []
-for i in range(1, numberOfArgs):
-    arguments.append(sys.argv[i])
-    print(sys.argv[i])
-
- """
-# ha nara
 
 # Set X
 n = random.randint(1000, 3000)
@@ -44,6 +26,7 @@ print("Set Z contains %d elements" % len(Z))
 intersection = X.intersection(Y)
 print("\nSets X and Y have %d elements in common" % len(intersection))
 
+
 """
 AVL Tree
 
@@ -64,12 +47,14 @@ class AVLNode(object):
 class AVL_Tree(object):
     def __init__(self):
         self.rotations = 0
+        self.searchComparisons = 0
         self.comparisons = 0
+        self.numNodes = 0
 
-    # Recursive function to insert val in subtree rooted with node and returns new root of subtree.
+    # Recursive function to insert a value in a tree rooted with a node and returns new root of the subtree.
     def insert(self, root, val):
-
-        # Step 1 - Perform normal BST
+        # Inserting node like normally done in a bst
+        self.comparisons += 1
         if not root:
             return AVLNode(val)
         elif val < root.val:
@@ -77,16 +62,14 @@ class AVL_Tree(object):
         else:
             root.right = self.insert(root.right, val)
 
-        # Step 2 - Update the height of the ancestor node
+        # Updating the parent height
         root.height = 1 + max(self.getHeight(root.left),
                               self.getHeight(root.right))
 
-        # Step 3 - Get the balance factor
-        # If balance factor is greater than 1, then the current node is unbalanced and rotations must be performed
+        # Getting the balance factor. If this is greater than 1, rotations are needed since the tree is unbalanced
         balance = self.getBalance(root)
 
-        # Step 4 - If the node is unbalanced, then try out the 4 cases to re-balance
-
+        # Re-balancing the tree
         # Case 1 - Left Left
         if balance > 1 and val < root.left.val:
             return self.rightRotate(root)
@@ -104,20 +87,20 @@ class AVL_Tree(object):
         if balance < -1 and val < root.right.val:
             root.right = self.rightRotate(root.right)
             return self.leftRotate(root)
-
         return root
 
-    # Recursive function to delete a node with given val from subtree with given root. It returns root of the modified subtree.
+    # Recursive function to delete a node with given value from subtree with given root. It returns root of the modified subtree.
     def delete(self, root, val):
 
-        # Step 1 - Perform standard BST delete
+        # Deleting node like normally done in a bst
         if not root:
             return root
-
         elif val < root.val:
+            self.comparisons += 1
             root.left = self.delete(root.left, val)
 
         elif val > root.val:
+            self.comparisons += 1
             root.right = self.delete(root.right, val)
 
         else:
@@ -135,18 +118,18 @@ class AVL_Tree(object):
             root.val = temp.val
             root.right = self.delete(root.right, temp.val)
 
-        # If the tree has only one node, simply return it
+        # If only one node is present in the tree, simply return it
         if root is None:
             return root
 
-        # Step 2 - Update the height of the ancestor node
+        # Updating the parent height
         root.height = 1 + max(self.getHeight(root.left),
                               self.getHeight(root.right))
 
-        # Step 3 - Get the balance factor
+        # Getting the balance factor. If this is greater than 1, rotations are needed since the tree is unbalanced
         balance = self.getBalance(root)
 
-        # Step 4 - If the node is unbalanced, then try out the 4 cases
+        # Re-balancing the tree
         # Case 1 - Left Left
         if balance > 1 and self.getBalance(root.left) >= 0:
             return self.rightRotate(root)
@@ -168,18 +151,18 @@ class AVL_Tree(object):
         return root
 
     def search(self, root, val):
-        self.comparisons += 1
+        self.searchComparisons += 1
         # If no root exists then there is no subtree to search in
         if root is None:
             return False
-        # Check if the current root value matches the value we are looking for
+        # If the current root value matches the value we are looking for, it means we are done searching
         elif root.val == val:
             return True
         # If value we are searching for is larger than the current root value it must mean that the value is in the right subtree
         elif root.val < val:
             return self.search(root.right, val)
 
-        # Otherwise check the left subtree
+        # Otherwise, if the value we are searching for is smaller than the current root, check the left subtree
         return self.search(root.left, val)
 
     def leftRotate(self, z):
@@ -227,8 +210,25 @@ class AVL_Tree(object):
     def getRotations(self):
         return self.rotations
 
-    def getComparisons(self):
+    def getsearchComparisons(self):
+        return self.searchComparisons
+
+    def getcomparisons(self):
         return self.comparisons
+
+    def countNodes(self, root):
+
+        if not root:
+            return
+
+        self.countNodes(root.left)
+        self.numNodes += 1
+        self.countNodes(root.right)
+
+    def getNumNodes(self, root):
+        self.numNodes = 0
+        self.countNodes(root)
+        return self.numNodes
 
     # Left subtree height – right subtree height
     def getBalance(self, root):
@@ -248,7 +248,7 @@ class AVL_Tree(object):
         if not root:
             return
 
-        print("{0} ".format(root.val), end="")
+        print(root.val," ")
         self.preOrder(root.left)
         self.preOrder(root.right)
 
@@ -258,7 +258,7 @@ class AVL_Tree(object):
             return
 
         self.inOrder(root.left)
-        print("{0} ".format(root.val), end="")
+        print(root.val," ", end="")
         self.inOrder(root.right)
 
     def postOrder(self, root):
@@ -268,7 +268,7 @@ class AVL_Tree(object):
 
         self.postOrder(root.left)
         self.postOrder(root.right)
-        print("{0} ".format(root.val), end="")
+        print(root.val," ", end="")
 
 
 # Printing the tree
@@ -299,51 +299,208 @@ RBT Tree
 https://www.geeksforgeeks.org/red-black-tree-set-1-introduction-2/
 https://www.geeksforgeeks.org/red-black-tree-set-2-insert/
 https://www.geeksforgeeks.org/red-black-tree-set-3-delete-2/
-
-https://www.geeksforgeeks.org/c-program-red-black-tree-insertion/
 """
 
-""" 
+
 class Colour(Enum):
     Black = 1
     Red = 2
 
-class RBNode(object):
-    def __init__(self, val):
-        self.val = val
-        self.parent = None
-        self.left = NULL
-        self.right = NULL
-        self.colour = Colour.Red  # if not red = black
-
-
-class RB_Tree(object):
-    def __init__(self):
-        self.root = None
-        self.size = 0
- """
-
 
 class Node():
-    def __init__(self, val=None, color='red'):
+    def __init__(self, val=None, colour=Colour.Red):
         self.right = None
         self.left = None
         self.parent = None
         self.val = val
-        self.color = color
+        self.colour = colour
 
 
 class RedBlackTree:
 
     def __init__(self):
-        self.NULL = Node(val=None, color='black')
+        self.NULL = Node(val=None, colour=Colour.Black)
         self.root = self.NULL
         self.size = 0
         self.rotations = 0
         self.comparisons = 0
-        self.ordered = []
+        self.searchComparisons = 0
         self.height = 0
-        pass
+
+    def insert(self, z):
+        new_node = Node(val=z)
+
+        # self._insert(new_node)
+        y = self.NULL
+        x = self.root
+        while x != self.NULL:
+            y = x
+            self.comparisons += 1
+            if new_node.val < x.val:
+                x = x.left
+            else:
+                x = x.right
+        new_node.parent = y
+        if y == self.NULL:
+            self.root = new_node
+        elif new_node.val < y.val:
+            y.left = new_node
+        else:
+            y.right = new_node
+        new_node.left = self.NULL
+        new_node.right = self.NULL
+        new_node.colour = Colour.Red
+        self.insert_fix(new_node)
+
+        self.size += 1
+
+    def insert_fix(self, z):
+        i = 0
+        while z.parent.colour == Colour.Red:
+            if z.parent == z.parent.parent.left:
+                y = z.parent.parent.right
+                if y.colour == Colour.Red:
+                    z.parent.colour = Colour.Black
+                    y.colour = Colour.Black
+                    z.parent.parent.colour = Colour.Red
+                    z = z.parent.parent
+                else:
+                    if z == z.parent.right:
+                        z = z.parent
+                        self.left_rotate(z)
+                    z.parent.colour = Colour.Black
+                    z.parent.parent.colour = Colour.Red
+                    self.right_rotate(z.parent.parent)
+            else:
+                y = z.parent.parent.left
+                if y.colour == Colour.Red:
+                    z.parent.colour = Colour.Black
+                    y.colour = Colour.Black
+                    z.parent.parent.colour = Colour.Red
+                    z = z.parent.parent
+                else:
+                    if z == z.parent.left:
+                        z = z.parent
+                        self.right_rotate(z)
+                    z.parent.colour = Colour.Black
+                    z.parent.parent.colour = Colour.Red
+                    self.left_rotate(z.parent.parent)
+            i += 1
+        self.root.colour = Colour.Black
+
+    def delete(self, z):
+        if self.size == 0:
+            print("Error")
+            return
+
+        node_del = self.key_search(self.root, z)
+        if node_del == None:
+            return
+
+        y = node_del
+        original_color = y.colour
+        if node_del.left == self.NULL:
+            x = node_del.right
+            self.transplant(node_del, node_del.right)
+        elif node_del.right == self.NULL:
+            x = node_del.left
+            self.transplant(node_del, node_del.right)
+        else:
+            y = self.min_node(node_del.right)
+            original_color = y.colour
+            x = y.right
+            if y.parent == node_del:
+                x.parent = y
+            else:
+                self.transplant(y, y.right)
+                y.right = node_del.right
+                y.right.parent = y
+            self.transplant(node_del, y)
+            y.left = node_del.left
+            y.left.parent = y
+            y.colour = node_del.colour
+        if original_color == Colour.Black:
+            self.delete_fix(x)
+
+        self.size -= 1
+
+    def delete_fix(self, x):
+        while x != self.root and x.colour == Colour.Black:
+            if x == x.parent.left:
+                w = x.parent.right
+                if w.colour == Colour.Red:
+                    w.colour = Colour.Black
+                    x.parent.colour = Colour.Red
+                    self.left_rotate(x.parent)
+                    w = x.parent.right
+                if w.left.colour == Colour.Black and w.right.colour == Colour.Black:
+                    w.colour = Colour.Red
+                    x = x.parent
+                else:
+                    if w.right.colour == Colour.Black:
+                        w.left.colour = Colour.Black
+                        w.colour = Colour.Red
+                        self.right_rotate(w)
+                        w = x.parent.right
+                    w.colour = x.parent.colour
+                    x.parent.colour = Colour.Black
+                    w.right.colour = Colour.Black
+                    self.left_rotate(x.parent)
+                    x = self.root
+            else:
+                w = x.parent.left
+                if w.colour == Colour.Red:
+                    w.colour = Colour.Black
+                    x.parent.colour = Colour.Red
+                    self.right_rotate(x.parent)
+                    w = x.parent.left
+                if w.right.colour == Colour.Black and w.left.colour == Colour.Black:
+                    w.colour = Colour.Red
+                    x = x.parent
+                else:
+                    if w.left.colour == Colour.Black:
+                        w.right.colour = Colour.Black
+                        w.colour = Colour.Red
+                        self.left_rotate(w)
+                        w = x.parent.left
+                    w.colour = x.parent.colour
+                    x.parent.colour = Colour.Black
+                    w.left.colour = Colour.Black
+                    self.right_rotate(x.parent)
+                    x = self.root
+        x.colour = Colour.Black
+
+    def transplant(self, u, v):
+        if u.parent == self.NULL:
+            self.root = v
+        elif u == u.parent.left:
+            u.parent.left = v
+        else:
+            u.parent.right = v
+        v.parent = u.parent
+
+    def search(self, root, target):
+        self.searchComparisons += 1
+
+        if root == self.NULL:
+            return "NotFound"
+        elif target == root.val:
+            return "Found"
+        elif target < root.val:
+            return self.search(root.left, target)
+        else:
+            return self.search(root.right, target)
+
+    def key_search(self, root, target):
+        self.comparisons += 1
+        if root == self.NULL:
+            return None
+        elif target == root.val:
+            return self.root
+        elif target < root.val:
+            return self.key_search(root.left, target)
+        else:
+            return self.key_search(root.right, target)
 
     def left_rotate(self, x):
         self.rotations += 1
@@ -379,197 +536,24 @@ class RedBlackTree:
         y.right = x
         x.parent = y
 
-    def insert(self, z):
-        new_node = Node(val=z)
-        self._insert(new_node)
-        self.size += 1
-
-    def _insert(self, z):
-        y = self.NULL
-        x = self.root
-        while x != self.NULL:
-            y = x
-            if z.val < x.val:
-                x = x.left
-            else:
-                x = x.right
-        z.parent = y
-        if y == self.NULL:
-            self.root = z
-        elif z.val < y.val:
-            y.left = z
-        else:
-            y.right = z
-        z.left = self.NULL
-        z.right = self.NULL
-        z.color = "red"
-        self.rb_insert_fixup(z)
-
-    def rb_insert_fixup(self, z):
-        i = 0
-        while z.parent.color == "red":
-            if z.parent == z.parent.parent.left:
-                y = z.parent.parent.right
-                if y.color == 'red':
-                    z.parent.color = "black"
-                    y.color = "black"
-                    z.parent.parent.color = "red"
-                    z = z.parent.parent
-                else:
-                    if z == z.parent.right:
-                        z = z.parent
-                        self.left_rotate(z)
-                    z.parent.color = 'black'
-                    z.parent.parent.color = 'red'
-                    self.right_rotate(z.parent.parent)
-            else:
-                y = z.parent.parent.left
-                if y.color == 'red':
-                    z.parent.color = "black"
-                    y.color = "black"
-                    z.parent.parent.color = "red"
-                    z = z.parent.parent
-                else:
-                    if z == z.parent.left:
-                        z = z.parent
-                        self.right_rotate(z)
-                    z.parent.color = 'black'
-                    z.parent.parent.color = 'red'
-                    self.left_rotate(z.parent.parent)
-            i += 1
-        self.root.color = 'black'
-
-    def transplant(self, u, v):
-        if u.parent == self.NULL:
-            self.root = v
-        elif u == u.parent.left:
-            u.parent.left = v
-        else:
-            u.parent.right = v
-        v.parent = u.parent
-
-    def delete(self, z):
-        if self.size == 0:
-            print("TreeError")
-            return
-        our_node = self.key_search(z)
-        if our_node == None:
-            return
-        self._delete(our_node)
-        self.size -= 1
-
-    def _delete(self, z):
-        y = z
-        original_color = y.color
-        if z.left == self.NULL:
-            x = z.right
-            self.transplant(z, z.right)
-        elif z.right == self.NULL:
-            x = z.left
-            self.transplant(z, z.right)
-        else:
-            y = self._min_node(z.right)
-            original_color = y.color
-            x = y.right
-            if y.parent == z:
-                x.parent = y
-            else:
-                self.transplant(y, y.right)
-                y.right = z.right
-                y.right.parent = y
-            self.transplant(z, y)
-            y.left = z.left
-            y.left.parent = y
-            y.color = z.color
-        if original_color == 'black':
-            self.rb_delete_fixup(x)
-
-    def rb_delete_fixup(self, x):
-        while x != self.root and x.color == 'black':
-            if x == x.parent.left:
-                w = x.parent.right
-                if w.color == 'red':
-                    w.color = 'black'
-                    x.parent.color = 'red'
-                    self.left_rotate(x.parent)
-                    w = x.parent.right
-                if w.left.color == 'black' and w.right.color == 'black':
-                    w.color = 'red'
-                    x = x.parent
-                else:
-                    if w.right.color == 'black':
-                        w.left.color = 'black'
-                        w.color = 'red'
-                        self.right_rotate(w)
-                        w = x.parent.right
-                    w.color = x.parent.color
-                    x.parent.color = 'black'
-                    w.right.color = 'black'
-                    self.left_rotate(x.parent)
-                    x = self.root
-            else:
-                w = x.parent.left
-                if w.color == 'red':
-                    w.color = 'black'
-                    x.parent.color = 'red'
-                    self.right_rotate(x.parent)
-                    w = x.parent.left
-                if w.right.color == 'black' and w.left.color == 'black':
-                    w.color = 'red'
-                    x = x.parent
-                else:
-                    if w.left.color == 'black':
-                        w.right.color = 'black'
-                        w.color = 'red'
-                        self.left_rotate(w)
-                        w = x.parent.left
-                    w.color = x.parent.color
-                    x.parent.color = 'black'
-                    w.left.color = 'black'
-                    self.right_rotate(x.parent)
-                    x = self.root
-        x.color = 'black'
-
-    def search(self, x):
-        return self._search(self.root, x)
-
-    def _search(self, current_node, target):
-        self.comparisons += 1
-        if current_node == self.NULL:
-            return "NotFound"
-        elif target == current_node.val:
-            return "Found"
-        elif target < current_node.val:
-            return self._search(current_node.left, target)
-        else:
-            return self._search(current_node.right, target)
-
     def getRotations(self):
         return self.rotations
+
+    def getsearchComparisons(self):
+        return self.searchComparisons
 
     def getComparisons(self):
         return self.comparisons
 
-    def key_search(self, target):
-        return self._key_search(self.root, target)
-
-    def _key_search(self, current_node, target):
-        self.comparisons += 1
-        if current_node == self.NULL:
-            return None
-        elif target == current_node.val:
-            return current_node
-        elif target < current_node.val:
-            return self._key_search(current_node.left, target)
-        else:
-            return self._key_search(current_node.right, target)
+    def getNumNodes(self):
+        return self.size
 
     def getHeight(self, root):
 
         heightLeft = 0
         heightRight = 0
 
-        if not root:
+        if root is None:
             return 0
 
         while root.right != self.NULL:
@@ -590,106 +574,119 @@ class RedBlackTree:
     def maximum(self):
         if self.size == 0:
             return "Empty"
-        return self._maximum(self.root)
 
-    def _maximum(self, x):
-        while x.right != self.NULL:
-            x = x.right
-        return x.val
+        while self.root.right != self.NULL:
+            self.root = self.root.right
+        return self.root.val
 
     def minimum(self):
         if self.size == 0:
             return "Empty"
-        return self._minimum(self.root)
 
-    def _minimum(self, x):
-        while x.left != self.NULL:
-            x = x.left
-        return x.val
+        while self.root.left != self.NULL:
+            self.root = self.root.left
 
-    def _min_node(self, x):
+        return self.root.val
+
+    def min_node(self, x):
         while x.left != self.NULL:
             x = x.left
         return x
 
-    def inprint(self):
+    def preOrder(self, root):
         if self.size == 0:
             print("Empty")
             return
-        self._inprint(self.root)
-        for i in range(len(self.ordered)-1):
-            print(self.ordered[i], end=' ')
-        print(self.ordered[-1])
-        self.ordered = []
 
-    def _inprint(self, x):
-        if x != self.NULL and x.val != None:
-            self._inprint(x.left)
-            self.ordered.append(x.val)
-            self._inprint(x.right)
+        if root != self.NULL and root.val != None:
+            print(root.val," ", end="")
+            self.preOrder(root.left)
+            self.preOrder(root.right)
 
+    def inOrder(self, root):
+        if self.size == 0:
+            print("Empty")
+            return
+
+        if root != self.NULL and root.val != None:
+            self.inOrder(root.left)
+            print(root.val," ", end="")
+            self.inOrder(root.right)
+
+    def postOrder(self, root):
+        if self.size == 0:
+            print("Empty")
+            return
+
+        if root != self.NULL and root.val != None:
+            self.postOrder(root.left)
+            self.postOrder(root.right)
+            print(root.val," ", end="")
 
 
 # Runner Program
+if __name__ == '__main__':
+    # Driver program to test AVL functions
+    AVLTree = AVL_Tree()
+    AVLroot = None
 
-# Driver program to test AVL functions
-AVLTree = AVL_Tree()
-AVLroot = None
+    RBTree = RedBlackTree()
 
-RBTree = RedBlackTree()
+    """
+    # Insert
+    """
+    for elem in X:
+        AVLroot = AVLTree.insert(AVLroot, elem)
 
-"""
-# Insert
-"""
-for elem in X:
-    AVLroot = AVLTree.insert(AVLroot, elem)
+    for elem in X:
+        RBTree.insert(elem)
 
-for elem in X:
-    RBTree.insert(elem)
+    print("\nInsert")
+    print("AVL {} total rotations required, height is {}, number of nodes is {}, total number of comparisons is {}".format(
+        AVLTree.getRotations(), AVLTree.getHeight(AVLroot), AVLTree.getNumNodes(AVLroot), AVLTree.getcomparisons()))
+    print("RB {} total rotations required, height is {}, number of nodes is {}, total number of comparisons is {}".format(
+        RBTree.getRotations(), RBTree.getHeight(RBTree.root), RBTree.getNumNodes(), RBTree.getComparisons()))
 
-print("\nInsert")
-print("AVL {} total rotations required, height is {}".format(AVLTree.getRotations(), AVLTree.getHeight(AVLroot)))  # add number of nodes
-print("RB {} total rotations required, height is {}".format(RBTree.getRotations(), RBTree.getHeight(RBTree.root)))  # add number of nodes
+    # print("In order traversal of the constructed AVL tree is:\n")
+    # AVLTree.inOrder(AVLroot)
+    # print("In order traversal of the constructed RB tree is:\n")
+    # RBTree.inOrder(RBTree.root)
 
-# print("In order traversal of the constructed AVL tree is:\n")
-# AVLTree.inOrder(AVLroot)
-# print("In order traversal of the constructed RB tree is:\n")
-# RBTree.inprint()
+    # printTree(AVLroot, 0)
+    # printTree(RBTree.root, 0)
 
-# printTree(AVLroot, 0)
-# printTree(RBTree.root, 0)
+    """
+    # Delete
+    """
+    for elem in Y:
+        AVLTree.delete(AVLroot, elem)
 
+    for elem in Y:
+        RBTree.delete(elem)
 
-"""
-# Delete
-"""
-for elem in Y:
-    AVLTree.delete(AVLroot, elem)
+    print("\nDelete")
+    print("AVL {} total rotations required, height is {}, number of nodes is {}, total number of comparisons is {}".format(
+        AVLTree.getRotations(), AVLTree.getHeight(AVLroot), AVLTree.getNumNodes(AVLroot), AVLTree.getcomparisons()))
+    print("RB {} total rotations required, height is {}, number of nodes is {}, total number of comparisons is {}".format(
+        RBTree.getRotations(), RBTree.getHeight(RBTree.root), RBTree.getNumNodes(), RBTree.getComparisons()))
 
-for elem in Y:
-    RBTree.delete(elem)
+    # print("In order traversal of the constructed AVL tree after deleting items is:\n")
+    # AVLTree.inOrder(AVLroot)
+    # RBTree.inOrder(RBTree.root)
 
-print("\nDelete")
-print("AVL {} total rotations required, height is {}".format(AVLTree.getRotations(), AVLTree.getHeight(AVLroot)))  # add number of nodes
-print("RB {} total rotations required, height is {}".format(RBTree.getRotations(), RBTree.getHeight(RBTree.root)))  # add number of nodes
+    # printTree(AVLroot, 0)
+    #printTree(RBTree.root, 0)
 
-# print("In order traversal of the constructed AVL tree after deleting items is:\n")
-# AVLTree.inOrder(AVLroot)
-# RBTree.inprint()
+    """
+    # Search
+    """
+    for elem in Z:
+        AVLTree.search(AVLroot, elem)
 
-# printTree(AVLroot, 0)
-#printTree(RBTree.root, 0)
+    for elem in Z:
+        RBTree.search(RBTree.root, elem)
 
-"""
-# Search
-"""
-for elem in Z:
-    AVLTree.search(AVLroot, elem)
-
-for elem in Z:
-    RBTree.search(elem)
-
-print("\nSearch")
-print("k is ", k)
-print("AVL: {} total comparisons required".format(AVLTree.getComparisons()))
-print("RB: {} total comparisons required".format(RBTree.getComparisons()))
+    print("\nSearch")
+    print("k is ", k)
+    print("AVL: {} total Comparisons required".format(AVLTree.getsearchComparisons()))
+    print("RB: {} total Comparisons required".format(RBTree.getsearchComparisons()))
